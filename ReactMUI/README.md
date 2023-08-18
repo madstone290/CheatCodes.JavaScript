@@ -1,27 +1,46 @@
-# React + TypeScript + Vite
+# React + Vite + Material UI
+리액트, 바이트, MUI 스택에 대해 알아본다.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+## Setup
+1. 프로젝트 생성
+    - `npm create vite`
+    - react, ts with swc 선택
+2. 기본 패키지 설치
+    - `npm install`
+    - 리액트 라우터 설치 `npm i react-router-dom`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+3. tsconfig.json 수정
+```json 
+"baseUrl": "./src",
+"sourceMap": true
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+4. vite.config.ts 수정
+    - `npm i vite-tsconfig-paths`
+```ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react-swc'
+// vite빌드시 tsconfig 경로설정 적용
+import tsconfigPaths from 'vite-tsconfig-paths'
+
+export default defineConfig({
+  plugins: [react(), tsconfigPaths()],
+})
+```
+
+5. MUI 설치
+```
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+```
+
+
+## FullCalendar 
+```
+# 기본 패키지
+npm i @fullcalendar/react
+
+# 추가 기능을 위한 패키지
+npm i @fullcalendar/daygrid
+npm i @fullcalendar/timegrid
+```

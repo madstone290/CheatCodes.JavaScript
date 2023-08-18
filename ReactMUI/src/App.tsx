@@ -1,16 +1,15 @@
 import { Typography } from '@mui/material';
 import './App.css'
-import Page1 from 'pages/Page1'
+import Page1 from 'pages/Home'
 import RootTheme from 'theme/RootTheme';
+import { MyRouter } from 'routes/MyRouter';
 
 
 function App() {
     return (
         <>
             <RootTheme>
-                <Page1 />
-                <Typography variant='sm'>sm font</Typography>
-                <Typography variant='md'>md font</Typography>
+                <MyRouter />
             </RootTheme>
         </>
     )
