@@ -9,7 +9,10 @@ export function MyRouter() {
             <Routes>
                 <Route path="/" element={<MyLayout />} >
                     <Route index={true} element={<Home />} />
-                    <Route path="MyCalendar" element={<MyCalendar />} />
+                    <Route path="third-party/" >
+                        <Route path="full-calendar" element={<MyCalendar />} />
+                    </Route>
+
                 </Route>
 
                 {/* <Route path="*" element={<Page404 />} /> */}

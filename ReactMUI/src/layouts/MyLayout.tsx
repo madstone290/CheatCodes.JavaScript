@@ -1,4 +1,5 @@
 import { Container, Link, Stack } from "@mui/material";
+import NavBar from "components/navigation/NavBar";
 import { Outlet } from "react-router-dom";
 
 export default MyLayout;
@@ -6,15 +7,10 @@ function MyLayout() {
 
     return (
         <>
-            <Stack direction="row" justifyContent="flex-start">
-                <Link href="/">Home</Link>
-            </Stack>
+            <NavBar />
             <Container>
                 <Outlet />
             </Container>
-
-
-
         </>
     )
 }
