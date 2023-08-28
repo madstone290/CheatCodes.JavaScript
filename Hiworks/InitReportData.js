@@ -12,20 +12,20 @@ const TITLE_SELECTOR = 'input#approval_document_title';
 const SELECT_SELECTOR = 'select[name="approval_form_no"]';
 const IFRAME_SELECTOR = 'iframe.se-contents-edit';
 
-const INIT_REPORT_DELAY = 1000; // 리포트값 초기화 딜레이
+const INIT_REPORT_DELAY = 1500; // 리포트값 초기화 딜레이
 const WEEK_REPORT_VALUE = '851'; // 주간업무보고
 
 const today = new Date();
 const thisMondayOffset = today.getDay() == 0 ? -6 : 1 - today.getDay();
-const thisMonday = new Date();
+const thisMonday = new Date(today);
 thisMonday.setDate(today.getDate() + thisMondayOffset);
-const lastMonday = new Date();
+const lastMonday = new Date(today);
 lastMonday.setDate(thisMonday.getDate() - 7);
-const lastFriday = new Date();
+const lastFriday = new Date(today);
 lastFriday.setDate(thisMonday.getDate() - 3);
 
-const TITLE_TEXT = `[주간업무보고] ${thisMonday.getFullYear()}년 ${thisMonday.getMonth() + 1}월 ${thisMonday.getDate()}일`
-const PROJECT_HTML = '프로젝트명 : 테네시 품질관리';
+const TITLE_TEXT = `[주간업무보고] ${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`
+const PROJECT_HTML = '프로젝트명 : 프로젝트';
 
 const PERIOD_HTML = `기&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;간 : ${lastMonday.getFullYear()}년 ${lastMonday.getMonth()+ 1}월 ${lastMonday.getDate()}일
  ~ ${lastFriday.getFullYear()}년 ${lastFriday.getMonth() + 1}월 ${lastFriday.getDate()}일`;
@@ -53,6 +53,7 @@ selectElement.addEventListener('change', evt => {
 function initReportData(){
 	const titleInput = document.querySelector(TITLE_SELECTOR);
 	titleInput.value = TITLE_TEXT;
+	
 	
 	const iframe = contentElement.querySelector(IFRAME_SELECTOR);
 	const iframeDocument = iframe.contentWindow.document;
