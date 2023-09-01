@@ -1,19 +1,72 @@
 import Excel from 'exceljs';
 import { readCellValue, readCellValueByName } from 'utils/CellReader';
 
-export class SimpleListExcelConvertService {
-    convert(sheet: Excel.Worksheet, propertyHeaderMap: Map<string, string>): any {
-        const headerPropertyMap = new Map<string, string>();
-        for (const [property, header] of propertyHeaderMap.entries()) {
-            headerPropertyMap.set(header, property);
-        }
 
+export interface PropertyHeader {
+    /**
+     * property name like name, age, etc.
+     */
+    property: string;
+
+    /**
+     * header name like 이름, 나이, etc.
+     */
+    header: string;
+}
+
+export interface PropertyCell {
+
+    /**
+     * property name like name, age, etc.
+     */
+    property: string;
+    /**
+     * cell name like A1, B2, C3, etc.
+     */
+    cell: string;
+}
+
+export class SimpleListExcelConvertService {
+
+    convert(sheet: Excel.Worksheet, propertyHeaderList: PropertyHeader[]): any {
+        const numberPropertyMap = new Map<number, string>();
+
+        const headerRow = sheet.getRow(1);
+        headerRow.eachCell((cell, colNumber) => {
+            const header = readCellValue(cell)?.toString();
+            if (header) {
+                const property = propertyHeaderList.find(x => x.header === header)?.property;
+                if (property) {
+                    numberPropertyMap.set(colNumber, property);
+                }
+            }
+        });
+
+        const list: any = [];
+        sheet.eachRow((row, _) => {
+            if (row.number === 1) // skip header row
+                return;
+
+            const model = {} as any;
+            row.eachCell((cell, colNumber) => {
+                const property = numberPropertyMap.get(colNumber);
+                if (property) {
+                    model[property] = readCellValue(cell);
+                }
+            });
+            list.push(model);
+        });
+        return list;
+
+    }
+
+    convert2(sheet: Excel.Worksheet, propertyHeaderList: PropertyHeader[]): any {
         const numberPropertyMap = new Map<number, string>();
         const headerRow = sheet.getRow(1);
         headerRow.eachCell((cell, colNumber) => {
             const header = readCellValue(cell)?.toString();
             if (header) {
-                const property = headerPropertyMap.get(header);
+                const property = propertyHeaderList.find(x => x.header === header)?.property;
                 if (property) {
                     numberPropertyMap.set(colNumber, property);
                 }
@@ -36,7 +89,6 @@ export class SimpleListExcelConvertService {
         });
         return list;
     }
-
 }
 
 export class MasterDetailListExcelConvertService {
@@ -54,7 +106,7 @@ export class MasterDetailListExcelConvertService {
 
         // case 1. row is empty
         let isRowEmpty = true;
-        for (const [colNumber, property] of masterNumberPropertyMap.entries()) {
+        for (const [colNumber, _] of masterNumberPropertyMap.entries()) {
             const cell = row.getCell(colNumber);
             if (cell.value) {
                 isRowEmpty = false;
@@ -67,7 +119,7 @@ export class MasterDetailListExcelConvertService {
         // case 2. row is merged. all cells are same as previous row.
         let isRowMerged = true;
         const prevRow = row.worksheet.getRow(row.number - 1);
-        for (const [colNumber, property] of masterNumberPropertyMap.entries()) {
+        for (const [colNumber, _] of masterNumberPropertyMap.entries()) {
             const cell = row.getCell(colNumber);
             const prevCell = prevRow.getCell(colNumber);
             if (cell == null && prevCell == null) {
@@ -85,17 +137,8 @@ export class MasterDetailListExcelConvertService {
 
 
     convert(sheet: Excel.Worksheet, detailName: string,
-        masterPropertyHeaderMap: Map<string, string>, detailPropertyHeaderMap: Map<string, string>): any {
-
-        // create header <-> property map
-        const masterHeaderPropertyMap = new Map<string, string>();
-        for (const [property, header] of masterPropertyHeaderMap.entries()) {
-            masterHeaderPropertyMap.set(header, property);
-        }
-        const detailHeaderPropertyMap = new Map<string, string>();
-        for (const [property, header] of detailPropertyHeaderMap.entries()) {
-            detailHeaderPropertyMap.set(header, property);
-        }
+        masterPropertyHeaderList: PropertyHeader[],
+        detailPropertyHeaderList: PropertyHeader[]): any {
 
         // create column number <-> property map
         const masterNumberPropertyMap = new Map<number, string>();
@@ -104,11 +147,11 @@ export class MasterDetailListExcelConvertService {
         headerRow.eachCell((cell, colNumber) => {
             const header = readCellValue(cell)?.toString();
             if (header) {
-                const masterPproperty = masterHeaderPropertyMap.get(header);
+                const masterPproperty = masterPropertyHeaderList.find(x => x.header === header)?.property;
                 if (masterPproperty) {
                     masterNumberPropertyMap.set(colNumber, masterPproperty);
                 }
-                const detailProperty = detailHeaderPropertyMap.get(header);
+                const detailProperty = detailPropertyHeaderList.find(x => x.header === header)?.property;
                 if (detailProperty) {
                     detailNumberPropertyMap.set(colNumber, detailProperty);
                 }
@@ -156,11 +199,11 @@ export class MasterDetailListExcelConvertService {
 }
 
 export class CustomExcelConvertService {
-    convert = (sheet: Excel.Worksheet, propertyCellMap: Map<string, string>): any => {
+    convert = (sheet: Excel.Worksheet, propertyCellList: PropertyCell[]): any => {
         const model: any = {};
 
-        for (const [propertyName, cellName] of propertyCellMap.entries()) {
-            model[propertyName] = readCellValueByName(sheet, cellName);
+        for (const { property, cell } of propertyCellList) {
+            model[property] = readCellValueByName(sheet, cell);
         }
 
         return model;
