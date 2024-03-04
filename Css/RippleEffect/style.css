@@ -18,30 +18,49 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
 
-    .box {
-        width: 500px;
-        height: 500px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+.box {
+    width: 500px;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
+    span {
+        position: absolute;
+        border-width: 0px;
+        border-style: solid;
+        border-color: #fff;
+        border-radius: 50%;
+        animation: animate 1s linear 1;
+        animation-delay: calc(-0.6s + (0.2s * var(--i)));
+    }
+
+    &.color {
         span {
-            position: absolute;
-            border-width: 0px;
-            border-style: solid;
-            border-color: #fff;
-            border-radius: 50%;
-            animation: animate 1s linear 1;
-            animation-delay: calc(0.2s * var(--i));
+            border: none;
+            background-color: rgba(83, 202, 119, 0.5);
         }
+    }
+}
 
-        &.color {
-            span {
-                border: none;
-                background-color:rgba(83, 202, 119, 0.5);
-            }
-        }
+.ripple {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+
+    .line {
+        position: absolute;
+        border-width: 0px;
+        border-style: solid;
+        border-color: #fff;
+        border-radius: 50%;
+        animation: animate 1s linear 1;
+        animation-delay: calc(-0.6s + (0.2s * var(--i)));
     }
 }
 
