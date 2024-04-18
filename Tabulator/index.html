@@ -1,0 +1,42 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <link href="./lib/tabulator/css/tabulator.min.css" rel="stylesheet">
+    <!-- <script type="text/javascript" src="./lib/tabulator/js/tabulator.min.js"></script> -->
+
+    <link href="./main.css" rel="stylesheet">
+
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <!-- jquery datepicker-->
+    <script src="./lib/jquery-ui-1.13.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="./lib/jquery-ui-1.13.2/jquery-ui.css">
+
+    <!-- select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- <script type="module" src="./main.js"></script> -->
+    <script type="module" src="./batch-edit/batch-edit.js"></script>
+</head>
+
+<body>
+    <style>
+        .tabulator [class^='select2'] {
+            border-radius: 0px !important;
+            border-width: 0px !important;
+        }
+    </style>
+    <button id="add">Add</button>
+    <button id="update">Update</button>
+    <button id="remove">Remove</button>
+    <button id="clear">Clear</button>
+    <select id="user-select"></select>
+    <div id="example-table"></div>
+    <input id="datepicker" class="datepicker" />
+</body>
+
+</html>
