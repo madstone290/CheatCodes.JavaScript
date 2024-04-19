@@ -1,8 +1,9 @@
 import { TabulatorFull as Tabulator } from '../lib/tabulator/js/tabulator_esm.js';
 import { Card, User, Product, Location } from './model.js';
-import { CARD_LIST, USER_LIST, PRODUCT_LIST, LOCATION_LIST } from './data.js';
+import { CARD_LIST, USER_LIST, PRODUCT_LIST, LOCATION_LIST, getCardList } from './data.js';
 import { select2Editor } from './custom-editors/select2-editor.js';
 import { jqueryDatePickerEditor } from './custom-editors/jquery-datepicker-editor.js';
+import { selectizeEditor } from './custom-editors/selectize-editor.js';
 
 let editable = false;
 let newRowId = -1;
@@ -39,11 +40,11 @@ console.log("locationValues", locationLookup);
 
 const table = new Tabulator("#example-table", {
     index: "id",               //set the index field to the id field
-    data: CARD_LIST,           //load row data from array
+    data: getCardList(500),           //load row data from array
     layout: "fitColumns",      //fit columns to width of table
-
+    height: '500px',
     // pagination
-    pagination: true,
+    pagination: false,
     paginationMode: "local",       //paginate the data
     paginationSize: 20,         //allow 7 rows per page of data
     paginationCounter: "rows", //display count of paginated rows in footer
@@ -86,15 +87,42 @@ const table = new Tabulator("#example-table", {
             width: 150,
             editable: true,
             editor: jqueryDatePickerEditor,
+            formatter: (cell) => {
+                const date = new Date(cell.getValue());
+                return date.toISOString();
+            },
+            //editor: "date",
+            // editorParams: {
+            //     min: "01/01/2020", // the minimum allowed value for the date picker
+            //     max: "02/12/2022", // the maximum allowed value for the date picker
+            //     format: "dd/MM/yyyy", // the format of the date value stored in the cell
+            //     verticalNavigation: "table", //navigate cursor around table without changing the value
+            //     elementAttributes: {
+            //         title: "slide bar to choose option" // custom tooltip
+            //     }
+            // }
         },
         {
             title: "user",
             field: "userId",
             width: 150,
             editable: true,
-            editor: select2Editor,
-            editorParams: {
-                selectOptions: tableUserSelect2Options,
+            editor: "list",
+            editorParams: (cell) => {
+                const rowData = cell.getRow().getData();
+                const rowId = rowData.id;
+                let values = [];
+                if (rowId % 2 == 0) {
+                    values = USER_LIST.map((x) => {
+                        return { value: x.id, label: x.name };
+                    });
+                }
+                return {
+                    values: values,
+                    allowEmpty: true,
+                    autocomplete: true,
+                    listOnEmpty: true,
+                }
             },
             formatter: "lookup",
             formatterParams: USER_LIST.reduce((acc, cur) => {
@@ -107,10 +135,19 @@ const table = new Tabulator("#example-table", {
             field: "productId",
             width: 150,
             editable: true,
-            editor: select2Editor,
+            editor: "list",
             editorParams: {
-                selectOptions: tableProductSelect2Options,
+                values: PRODUCT_LIST.map((x) => {
+                    return { value: x.id, label: x.name };
+                }),
+                allowEmpty: true,
+                autocomplete: true,
+                listOnEmpty: true,
             },
+            // editor: select2Editor,
+            // editorParams: {
+            //     selectOptions: tableProductSelect2Options,
+            // },
             formatter: "lookup",
             formatterParams: PRODUCT_LIST.reduce((acc, cur) => {
                 acc[cur.id] = cur.name;
@@ -168,11 +205,17 @@ table.on("cellClick", function (e, cell) {
     }
 });
 
+table.on("cellEditing", function (cell) {
+    console.log(cell);
+    const editor = cell.getElement();
+    console.log(editor);
+});
+
 function editCheck(cell) {
     return editable;
 }
 
-
+    
 
 updateBtn.addEventListener("click", () => {
     editable = !editable;
@@ -194,4 +237,14 @@ userSelect.val(3).trigger("change.select2");
 
 $("#datepicker").datepicker({
 
+});
+
+$("#selectize").selectize({
+    valueField: 'id',
+    labelField: 'title',
+    searchField: 'title',
+    options: USER_LIST.map((x) => {
+        return { id: x.id, title: x.name };
+    }),
+    create: false
 });

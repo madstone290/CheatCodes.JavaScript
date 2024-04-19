@@ -124,5 +124,21 @@ const CARD_LIST = [
     },
 ];
 
+function getCardList(count) {
+    const list = [];
+    for (let i = 0; i < count; i++) {
+        list.push({
+            id: i + 1,
+            workDate: "2021-01-01",
+            userId: 1,
+            productId: 1,
+            locationId: 1,
+            hours: 1,
+        });
+    }
+    return list;
 
-export { CARD_LIST, PRODUCT_LIST, LOCATION_LIST, USER_LIST };
+}
+
+
+export { getCardList, CARD_LIST, PRODUCT_LIST, LOCATION_LIST, USER_LIST };
