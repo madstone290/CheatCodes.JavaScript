@@ -15,36 +15,62 @@ var tabledata = [
     { id: 5, name: "Joseph Joseph", },
 ];
 
+let editable = false;
+function checkEditable() {
+    return editable;
+}
+
 const tableControl1 = new Tabulator("#table1", {
     data: tabledata,
     height: '100%',
 
-    resizableColumnFit: true,
-    variableHeight: true,
+    // resizableColumnFit: true,
+    // variableHeight: true,
     columnDefaults: {
         width: 150,
         minWidth: 50,
+        headerHozAlign: "center",
+        hozAlign: "left",
+        vertAlign: "middle",
+        headerSort: false,
     },
     // 컬럼 직접 설정
     columns: [
-        { title: "Name", field: "name", width: 200, headerVertical: false },
+        {
+            width: 50,
+            field: "checked",
+            visible: true,
+            formatter: "rowSelection",
+            hozAlign: "center",
+            headerSort: false,
+        },
+        {
+            title: "Name", field: "name", width: 200,
+            headerVertical: false,
+            editable: false,
+            editor: "input"
+        },
+        {
+            editable: false,
+            title: "Age", field: "age",
+            //editor: "number",
+        },
+
     ],
-    // 데이터 속성에 따라 컬럼을 자동으로 생성
-    autoColumns: false,
-    // 자동 생성된 컬럼을 재정의
-    autoColumnsDefinitions: function (definitions) {
-        definitions.forEach((column) => {
-            if (column.field == "name") {
-                column.headerVertical = true;
-            }
+    // // 데이터 속성에 따라 컬럼을 자동으로 생성
+    // autoColumns: true,
+    // // 자동 생성된 컬럼을 재정의
+    // autoColumnsDefinitions: function (definitions) {
+    //     definitions.forEach((column) => {
+    //         if (column.field == "name") {
+    //             column.headerVertical = true;
+    //         }
 
-            if (column.field == "text") {
-                column.editor = "textarea";
-                column.cssClass = "text-column";
-            }
-        });
-        return definitions;
-    },
-
-
+    //         if (column.field == "text") {
+    //             column.editor = "textarea";
+    //             column.cssClass = "text-column";
+    //         }
+    //     });
+    //     return definitions;
+    // },
 });
