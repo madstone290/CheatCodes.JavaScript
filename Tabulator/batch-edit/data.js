@@ -1,4 +1,4 @@
-import { Card, User, Product, Location } from './model.js';
+import { Card, User, Product, Location } from "./model.js";
 
 /**
  * @type {Array<Product>}
@@ -66,7 +66,7 @@ const USER_LIST = [
     },
     {
         id: 3,
-        name: "Charlie",
+        name: "Bob",
     },
     {
         id: 4,
@@ -131,14 +131,12 @@ function getCardList(count) {
             id: i + 1,
             workDate: "2021-01-01",
             userId: 1,
-            productId: 1,
-            locationId: 1,
+            productId: (i % 3) + 1,
+            locationId: (i % 3) + 1,
             hours: 1,
         });
     }
     return list;
-
 }
-
 
 export { getCardList, CARD_LIST, PRODUCT_LIST, LOCATION_LIST, USER_LIST };

@@ -1,9 +1,15 @@
-import { TabulatorFull as Tabulator } from '../lib/tabulator/js/tabulator_esm.js';
-import { Card, User, Product, Location } from './model.js';
-import { CARD_LIST, USER_LIST, PRODUCT_LIST, LOCATION_LIST, getCardList } from './data.js';
-import { select2Editor } from './custom-editors/select2-editor.js';
-import { jqueryDatePickerEditor } from './custom-editors/jquery-datepicker-editor.js';
-import { selectizeEditor } from './custom-editors/selectize-editor.js';
+import { TabulatorFull as Tabulator } from "../lib/tabulator/js/tabulator_esm.js";
+import { Card, User, Product, Location } from "./model.js";
+import {
+    CARD_LIST,
+    USER_LIST,
+    PRODUCT_LIST,
+    LOCATION_LIST,
+    getCardList,
+} from "./data.js";
+import { select2Editor } from "./custom-editors/select2-editor.js";
+import { jqueryDatePickerEditor } from "./custom-editors/jquery-datepicker-editor.js";
+import { selectizeEditor } from "./custom-editors/selectize-editor.js";
 
 let editable = false;
 let newRowId = -1;
@@ -14,21 +20,21 @@ const removeBtn = document.getElementById("remove");
 const userSelect = $("#user-select");
 
 const tableUserSelect2Options = {
-    placeholder: 'Select',
+    placeholder: "Select",
     data: USER_LIST.map((x) => {
         return { id: x.id, text: x.name };
     }),
-    width: '100%',
+    width: "100%",
     minimumInputLength: 0,
     allowClear: true,
 };
 
 const tableProductSelect2Options = {
-    placeholder: 'Select',
+    placeholder: "Select",
     data: PRODUCT_LIST.map((x) => {
         return { id: x.id, text: x.name };
     }),
-    width: '100%',
+    width: "100%",
     minimumInputLength: 0,
     allowClear: true,
 };
@@ -38,28 +44,38 @@ const locationLookup = LOCATION_LIST.map((location) => {
 });
 console.log("locationValues", locationLookup);
 
+const tableData = getCardList(50);
+tableData.forEach((row) => {
+    row.userName = USER_LIST.find((x) => x.id == row.userId).name;
+    row.productName = PRODUCT_LIST.find((x) => x.id == row.productId).name;
+    row.locationName = LOCATION_LIST.find((x) => x.id == row.locationId).name;
+});
+
 const table = new Tabulator("#example-table", {
-    index: "id",               //set the index field to the id field
-    data: getCardList(500),           //load row data from array
-    layout: "fitColumns",      //fit columns to width of table
-    height: '500px',
+    index: "id", //set the index field to the id field
+    data: tableData, //load row data from array
+    layout: "fitColumns", //fit columns to width of table
+    height: "500px",
     // pagination
     pagination: false,
-    paginationMode: "local",       //paginate the data
-    paginationSize: 20,         //allow 7 rows per page of data
+    paginationMode: "local", //paginate the data
+    paginationSize: 20, //allow 7 rows per page of data
     paginationCounter: "rows", //display count of paginated rows in footer
     paginationSizeSelector: [10, 20, 50, 100], //allow users to select rows per page
-    paginationButtonCount: 5,  //show 5 page buttons
+    paginationButtonCount: 5, //show 5 page buttons
     //paginationAddRow: "page",  //when adding a new row, add it to the current page
 
-    movableColumns: true,      //allow column order to be changed
-    initialSort: [             //set the initial sort order of the data
+    movableColumns: true, //allow column order to be changed
+    initialSort: [
+        //set the initial sort order of the data
         // { column: "name", dir: "asc" },
     ],
     columnDefaults: {
-        tooltip: false,         //show tool tips on cells
+        tooltip: false, //show tool tips on cells
+        headerFilter: "input",
     },
-    columns: [ //Define Table Columns
+    columns: [
+        //Define Table Columns
         {
             field: "state",
             width: 100,
@@ -72,12 +88,13 @@ const table = new Tabulator("#example-table", {
             hozAlign: "center",
             headerSort: false,
             width: 50,
-            visible: false
+            visible: false,
         },
         {
             title: "id",
             field: "id",
             width: 150,
+        
             editor: "input",
             editable: editCheck,
         },
@@ -86,6 +103,7 @@ const table = new Tabulator("#example-table", {
             field: "workDate",
             width: 150,
             editable: true,
+            headerFilter: "date",
             editor: jqueryDatePickerEditor,
             formatter: (cell) => {
                 const date = new Date(cell.getValue());
@@ -106,29 +124,36 @@ const table = new Tabulator("#example-table", {
             title: "user",
             field: "userId",
             width: 150,
+            headerFilter: "input",
             editable: true,
             editor: "list",
             editorParams: (cell) => {
                 const rowData = cell.getRow().getData();
                 const rowId = rowData.id;
                 let values = [];
-                if (rowId % 2 == 0) {
-                    values = USER_LIST.map((x) => {
-                        return { value: x.id, label: x.name };
-                    });
-                }
+                values = USER_LIST.map((x) => {
+                    return { value: x.id, label: x.name };
+                });
                 return {
                     values: values,
                     allowEmpty: true,
                     autocomplete: true,
                     listOnEmpty: true,
-                }
+                };
             },
-            formatter: "lookup",
+            headerFilterFunc: (headerValue, rowValue, rowData, filterParams) => {
+                const userName = headerValue;
+                const rowUserName = USER_LIST.find((x) => x.id == rowValue).name;
+                return rowUserName.toLowerCase().includes(userName.toLowerCase());
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+                return USER_LIST.find((x) => x.id == cell.getValue()).name;
+                //return cell.getRow().getData().userName;
+            },
             formatterParams: USER_LIST.reduce((acc, cur) => {
                 acc[cur.id] = cur.name;
                 return acc;
-            }, {})
+            }, {}),
         },
         {
             title: "product",
@@ -152,7 +177,7 @@ const table = new Tabulator("#example-table", {
             formatterParams: PRODUCT_LIST.reduce((acc, cur) => {
                 acc[cur.id] = cur.name;
                 return acc;
-            }, {})
+            }, {}),
         },
         {
             title: "location",
@@ -165,13 +190,13 @@ const table = new Tabulator("#example-table", {
                 autocomplete: true,
                 allowEmpty: true,
                 listOnEmpty: true,
-                valuesLookup: true
+                valuesLookup: true,
             },
             formatter: "lookup",
             formatterParams: locationLookup.reduce((acc, cur) => {
                 acc[cur.value] = cur.label;
                 return acc;
-            }, {})
+            }, {}),
         },
         {
             title: "hours",
@@ -183,18 +208,26 @@ const table = new Tabulator("#example-table", {
     ],
     rowContextMenu: [
         {
-            label: 'Add row above',
+            label: "Add row above",
             action: (_e, row) => {
-                table.addRow({ id: `${newRowId--}`, state: "added" }, true, row);
+                table.addRow(
+                    { id: `${newRowId--}`, state: "added" },
+                    true,
+                    row
+                );
             },
         },
         {
-            label: 'Add row below',
+            label: "Add row below",
             action: (e, row) => {
-                table.addRow({ id: `${newRowId--}`, state: "added" }, false, row);
+                table.addRow(
+                    { id: `${newRowId--}`, state: "added" },
+                    false,
+                    row
+                );
             },
         },
-    ]
+    ],
 });
 
 // 체크 셀(체크박스 외부) 클릭시 row 선택
@@ -215,8 +248,6 @@ function editCheck(cell) {
     return editable;
 }
 
-    
-
 updateBtn.addEventListener("click", () => {
     editable = !editable;
     table.toggleColumn("checked");
@@ -235,16 +266,14 @@ userSelect.select2({
 });
 userSelect.val(3).trigger("change.select2");
 
-$("#datepicker").datepicker({
-
-});
+$("#datepicker").datepicker({});
 
 $("#selectize").selectize({
-    valueField: 'id',
-    labelField: 'title',
-    searchField: 'title',
+    valueField: "id",
+    labelField: "title",
+    searchField: "title",
     options: USER_LIST.map((x) => {
         return { id: x.id, title: x.name };
     }),
-    create: false
+    create: false,
 });
