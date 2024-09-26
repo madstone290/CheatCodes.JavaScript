@@ -10,6 +10,9 @@ class ExcelWriter {
     async WriteTableAsArray(options) {
         const workbook = new Excel.Workbook();
         const sheet = workbook.addWorksheet(options.sheetName);
+        sheet.views = [
+            { state: 'frozen', xSplit: 0, ySplit: 1 }
+        ];
         const headerRow = sheet.getRow(options.headerRowStartNumber);
         headerRow.font = { bold: true };
         headerRow.values = options.columns.map(column => column.caption);
@@ -49,6 +52,29 @@ class ExcelWriter {
                     sheet.addImage(imageId, range);
                 }
             }
+        });
+
+
+        // 셀 스타일 적용
+        sheet.eachRow(row => {
+            row.eachCell(cell => {
+                const columnIndex = Number(cell.col) - 1;
+                const column = options.columns[columnIndex];
+                cell.style.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' },
+                };
+
+                if (column.readonly) {
+                    cell.style.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFD9D9D9' },
+                    }
+                }
+            });
         });
 
         const buffer = await workbook.xlsx.writeBuffer();

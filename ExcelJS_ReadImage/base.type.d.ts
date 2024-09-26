@@ -36,7 +36,9 @@ namespace Base {
         dataRows: object[];
     }
 
-
+    interface WriteTableColumn extends TableColumn {
+        readonly: boolean;
+    }
 
     interface WriteTableAsArrayOptions {
         sheetName: string;
@@ -44,7 +46,7 @@ namespace Base {
         dataRowStartNumber: number;
         rowHeight: number;
         columnWidth: number[];
-        columns: TableColumn[];
+        columns: WriteTableColumn[];
         dataRows: any[][];
     }
 

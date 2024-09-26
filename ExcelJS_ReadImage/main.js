@@ -3,13 +3,14 @@
  * @param {*} caption 
  * @param {*} field 
  * @param {*} type 
- * @returns {Base.TableColumn}
+ * @returns {Base.WriteTableColumn}
  */
-const getColumnOption = (caption, field, type = "string") => {
+const getColumnOption = (caption, field, type = "string", readonly = false) => {
     return {
         caption,
         field,
         type,
+        readonly,
     }
 };
 
@@ -52,8 +53,8 @@ window.addEventListener('load', () => {
         const buffer = await excelWriter.WriteTableAsArray({
             sheetName: "Sheet1",
             columns: [
-                getColumnOption("이름", "name"),
-                getColumnOption("나이", "age"),
+                getColumnOption("이름", "name", "string", true),
+                getColumnOption("나이", "age", "number", true),
                 getColumnOption("성별", "sex"),
                 getColumnOption("사진", "photo", "image"),
                 getColumnOption("생일", "birthday"),
