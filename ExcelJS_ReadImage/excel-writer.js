@@ -3,6 +3,59 @@ class ExcelWriter {
     }
 
     /**
+     * 배열 데이터를 엑셀 파일로 저장한다.
+     * @param {Base.WriteTableAsArrayOptions} options 
+     * @returns {Promise<ArrayBuffer>}
+     */
+    async WriteTableAsArray(options) {
+        const workbook = new Excel.Workbook();
+        const sheet = workbook.addWorksheet(options.sheetName);
+        const headerRow = sheet.getRow(options.headerRowStartNumber);
+        headerRow.font = { bold: true };
+        headerRow.values = options.columns.map(column => column.caption);
+        sheet.columns.forEach((column, index) => {
+            column.width = options.columnWidth[index];
+        });
+
+        let rowNumber = options.dataRowStartNumber - 1;
+        const dataRows = options.dataRows;
+        dataRows.forEach(dataRow => {
+            rowNumber++;
+            const valueExceptImage = dataRow.map((value, index) => {
+                const column = options.columns[index];
+                if (column.type === "image") {
+                    return null;
+                }
+                return value;
+            });
+            const row = sheet.getRow(rowNumber);
+            row.height = options.rowHeight;
+            row.values = valueExceptImage;
+
+            for (let columnIndex = 0; columnIndex < options.columns.length; columnIndex++) {
+                const isImage = options.columns[columnIndex].type === "image";
+                if (isImage) {
+                    const imageId = workbook.addImage({
+                        buffer: dataRow[columnIndex].buffer,
+                        extension: 'png',
+                    });
+                    const range = {
+                        tl: {
+                            col: columnIndex,
+                            row: rowNumber - 1,
+                        },
+                        ext: { width: 80, height: 80, },
+                    };
+                    sheet.addImage(imageId, range);
+                }
+            }
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        return buffer;
+    }
+
+    /**
      * 
      * @param {object} dataRows 
      * @param {Base.WriteTableOptions} options 
@@ -33,7 +86,7 @@ class ExcelWriter {
                     continue;
                 }
 
-                if (column.isImage) {
+                if (column.type) {
                     const imageId = workBook.addImage({
                         buffer: value.buffer,
                         extension: 'png',

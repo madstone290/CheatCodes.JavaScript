@@ -1,8 +1,15 @@
-const getColumnOption = (caption, field, isImage = false) => {
+/**
+ * 
+ * @param {*} caption 
+ * @param {*} field 
+ * @param {*} type 
+ * @returns {Base.TableColumn}
+ */
+const getColumnOption = (caption, field, type = "string") => {
     return {
         caption,
         field,
-        isImage,
+        type,
     }
 };
 
@@ -12,22 +19,55 @@ window.addEventListener('load', () => {
     writeButton.onclick = async () => {
         const excelWriter = new ExcelWriter();
 
-        const buffer = await excelWriter.writeTable(data, {
+        // const buffer = await excelWriter.writeTable(data, {
+        //     sheetName: "Sheet1",
+        //     headerRowStartNumber: 1,
+        //     dataRowStartNumber: 2,
+        //     dataRows: data,
+        //     columns: [
+        //         getColumnOption("이름", "name", false),
+        //         getColumnOption("나이", "age", false),
+        //         getColumnOption("성별", "sex", false),
+        //         getColumnOption("사진", "photo", true),
+        //         getColumnOption("생일", "birthday", false),
+        //         getColumnOption("추가계산", "added", false),
+        //         getColumnOption("결혼여부", "marry", false),
+        //         getColumnOption("사진2", "photo2", true),
+        //     ]
+        // });
+
+        const dataAsArray = data.map(model => {
+            return [
+                model.name,
+                model.age,
+                model.sex,
+                model.photo,
+                model.birthday,
+                model.added,
+                model.marry,
+                model.photo2,
+            ];
+        });
+
+        const buffer = await excelWriter.WriteTableAsArray({
             sheetName: "Sheet1",
+            columns: [
+                getColumnOption("이름", "name"),
+                getColumnOption("나이", "age"),
+                getColumnOption("성별", "sex"),
+                getColumnOption("사진", "photo", "image"),
+                getColumnOption("생일", "birthday"),
+                getColumnOption("추가계산", "added"),
+                getColumnOption("결혼여부", "marry"),
+                getColumnOption("사진2", "photo2", "image"),
+            ],
+            rowHeight: 80,
+            columnWidth: [20, 20, 20, 20, 20, 20, 20, 20],
             headerRowStartNumber: 1,
             dataRowStartNumber: 2,
-            dataRows: data,
-            columns: [
-                getColumnOption("이름", "name", false),
-                getColumnOption("나이", "age", false),
-                getColumnOption("성별", "sex", false),
-                getColumnOption("사진", "photo", true),
-                getColumnOption("생일", "birthday", false),
-                getColumnOption("추가계산", "added", false),
-                getColumnOption("결혼여부", "marry", false),
-                getColumnOption("사진2", "photo2", true),
-            ]
+            dataRows: dataAsArray,
         });
+
         // download excel file
         const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const url = URL.createObjectURL(blob);
@@ -49,15 +89,15 @@ window.addEventListener('load', () => {
         dataRowStartNumber: 2,
         sheetNumber: 1,
         columns: [
-            getColumnOption("이름", "name", false),
-            getColumnOption("나이", "age", false),
-            getColumnOption("성별", "sex", false),
-            getColumnOption("사진", "photo", true),
-            getColumnOption("생일", "birthday", false),
-            getColumnOption("추가계산", "added", false),
-            getColumnOption("결혼여부", "marry", false),
-            getColumnOption("사진2", "photo2", true),
-        ]
+            getColumnOption("이름", "name"),
+            getColumnOption("나이", "age"),
+            getColumnOption("성별", "sex"),
+            getColumnOption("사진", "photo", "image"),
+            getColumnOption("생일", "birthday"),
+            getColumnOption("추가계산", "added"),
+            getColumnOption("결혼여부", "marry"),
+            getColumnOption("사진2", "photo2", "image"),
+        ],
     };
 
     /**

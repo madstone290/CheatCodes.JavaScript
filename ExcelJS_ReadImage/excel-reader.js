@@ -66,7 +66,7 @@ class ExcelReader {
 
         // 이미지는 셀에 값으로 존재하지 않고 별도의 이미지로 존재한다.
         // 이미지의 top-left를 통해 이미지가 있는 셀을 찾아서 이미지를 가져온다.
-        const imageColumnNumbers = Array.from(columnMap.entries()).filter(entry => entry[1].isImage).map(entry => entry[0]);
+        const imageColumnNumbers = Array.from(columnMap.entries()).filter(entry => entry[1].type == "image").map(entry => entry[0]);
         for (const columnNumber of imageColumnNumbers) {
             const cellImageInfo = imageInfos.find(imageInfo => {
                 const cellRowIndex = row.number - 1;
