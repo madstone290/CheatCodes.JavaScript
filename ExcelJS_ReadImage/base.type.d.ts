@@ -38,6 +38,12 @@ namespace Base {
 
     interface WriteTableColumn extends TableColumn {
         readonly: boolean;
+        dataValidation?: {
+            type: "list";
+            dataSource: string[];
+            errorTitle?: string;
+            error?: string;
+        };
     }
 
     interface WriteTableAsArrayOptions {

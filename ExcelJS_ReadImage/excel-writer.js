@@ -20,6 +20,29 @@ class ExcelWriter {
             column.width = options.columnWidth[index];
         });
 
+        for (let columnIndex = 0; columnIndex < options.columns.length; columnIndex++) {
+            const tableColumn = options.columns[columnIndex];
+            const columnNumber = columnIndex + 1;
+
+            if (tableColumn.dataValidation) {
+                sheet.getRows(2, 9999).forEach(row => {
+                    const dataSourceString = tableColumn.dataValidation.dataSource.join(',');
+                    const formulaeString = `"${dataSourceString}"`;
+
+                    row.getCell(columnNumber).dataValidation = {
+                        type: 'list',
+                        allowBlank: true,
+                        operator: 'equal',
+                        formulae: [formulaeString],
+                        showErrorMessage: true,
+                        errorStyle: 'error',
+                        errorTitle: tableColumn.dataValidation.errorTitle ?? 'Invalid value',
+                        error: tableColumn.dataValidation.error ?? 'The value is not valid',
+                    }
+                });
+            }
+        }
+
         let rowNumber = options.dataRowStartNumber - 1;
         const dataRows = options.dataRows;
         dataRows.forEach(dataRow => {

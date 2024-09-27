@@ -16,6 +16,47 @@ const getColumnOption = (caption, field, type = "string", readonly = false) => {
 
 window.addEventListener('load', () => {
     let data = [];
+
+
+    const dropdown = document.getElementById("dropdown");
+    dropdown.onclick = async (e) => {
+        const excelWriter = new ExcelWriter();
+        
+        const dataAsArray = [
+            ["홍길동", 20, "M(남)"],
+            ["김철수", 30, "M(남)"],
+            ["박영희", 40, "F(여)"],
+        ];
+
+        const buffer = await excelWriter.WriteTableAsArray({
+            sheetName: "Sheet1",
+            columns: [
+                getColumnOption("이름", "name", "string", true),
+                getColumnOption("나이", "age", "number", true),
+                {
+                    ...getColumnOption("성별", "sex"),
+                    dataValidation: {
+                        type: "list",
+                        dataSource: ["M(남)", "F(여)"]
+                    }
+                }
+            ],
+            rowHeight: 80,
+            columnWidth: [20, 20, 20, 20, 20, 20, 20, 20],
+            headerRowStartNumber: 1,
+            dataRowStartNumber: 2,
+            dataRows: dataAsArray,
+        });
+
+        // download excel file
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "data.xlsx";
+        a.click();
+    };
+
     const writeButton = document.getElementById("write");
     writeButton.onclick = async () => {
         const excelWriter = new ExcelWriter();
